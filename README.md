@@ -13,6 +13,7 @@ This project was developed using the following technologies:
 ```
 /project-root
 │── 📁 bin            # You will only use it!
+|── ── gerenciar_produtos.dart # the activity.
 ```
 
 ## 📥 Installation
