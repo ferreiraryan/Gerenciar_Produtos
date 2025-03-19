@@ -1,2 +1,2 @@
-# Gerenciar_Produtos
-Code made in dart to train the use of classes.
+A sample command-line application with an entrypoint in `bin/`, library code
+in `lib/`, and example unit test in `test/`.
