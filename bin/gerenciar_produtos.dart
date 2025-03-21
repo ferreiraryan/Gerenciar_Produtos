@@ -11,8 +11,12 @@ class Produto {
   String? _descricao;
   int _vendidos = 0;
 
-  Produto(this._nome, this._preco, this._quantidadeEmEstoque,
-      [this._descricao]);
+  Produto(
+    this._nome,
+    this._preco,
+    this._quantidadeEmEstoque, [
+    this._descricao,
+  ]);
   String get nome => _nome;
   double get preco => _preco;
   int get quantidadeEmEstoque => _quantidadeEmEstoque;
@@ -56,12 +60,19 @@ class Produto {
 
   bool vender(int quantidade) {
     if (_quantidadeEmEstoque > 0) {
-      _quantidadeEmEstoque -= quantidade;
-      _vendidos -= quantidade;
+      _vendidos += quantidade;
       return true;
     } else {
       return false;
     }
+  }
+
+  bool reduzirEstoque(int quantidade) {
+    if (_quantidadeEmEstoque < 0) {
+      return false;
+    }
+    _quantidadeEmEstoque -= quantidade;
+    return true;
   }
 
   void reporEstoque(int quantidade) {
@@ -76,6 +87,7 @@ class Carrinho {
 
   void adicionarProdutoCarrinho(Produto produto) {
     carrinho.add(produto);
+    produto.reduzirEstoque(1);
   }
 
   void mostrarCarrinho() {
@@ -96,15 +108,18 @@ class Carrinho {
   }
 
   void comprarCarrinho() {
-    for (var Produto in carrinho) {
-      if (Produto.vender(1)) {
-        print("Compra realizada");
-      } else {
-        print("Estoque indisponivel para o produto $Produto!");
-      }
+    List<Produto> itensParaRemover = [];
 
-      carrinho.removeWhere((Produto) => Produto == Produto);
+    for (var produto in carrinho) {
+      if (produto.vender(1)) {
+        print("Compra realizada do produto ${produto.nome}");
+        itensParaRemover.add(produto);
+      } else {
+        print("Estoque indisponível para o produto ${produto.nome}!");
+      }
     }
+
+    carrinho.removeWhere((produto) => itensParaRemover.contains(produto));
   }
 }
 
@@ -134,14 +149,14 @@ Produto cadastrarProdutos() {
 
 void listarProdutos() {
   print("-----------");
-  int index = 1;
   for (var element in produtos) {
     String nomeProduto = element.nome;
     double precoProduto = element.preco;
     int quantProduto = element.quantidadeEmEstoque;
+    int Vendidos = element.vendidos;
     print(
-        "$index - $nomeProduto, R\$ $precoProduto, Quantidade: $quantProduto");
-    index++;
+      " - $nomeProduto, R\$ $precoProduto, Quantidade: $quantProduto, Vendidos: $Vendidos",
+    );
   }
 }
 
@@ -162,6 +177,7 @@ void loopCarrinho() {
         listarProdutos();
         print("Digite o nome do produto que quer adicionar ao carrinho:");
         String nomeProduto = entradaString();
+        print("Digite a quantidade desejada:");
         for (var element in produtos) {
           if (element.nome != nomeProduto) {
             print("Produto nao encontrado!");
