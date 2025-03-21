@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 List<Produto> produtos = [];
@@ -8,12 +9,14 @@ class Produto {
   double _preco;
   int _quantidadeEmEstoque;
   String? _descricao;
+  int _vendidos = 0;
 
   Produto(this._nome, this._preco, this._quantidadeEmEstoque,
       [this._descricao]);
   String get nome => _nome;
   double get preco => _preco;
   int get quantidadeEmEstoque => _quantidadeEmEstoque;
+  int get vendidos => _vendidos;
 
   set nome(String nome) {
     if (nome.isNotEmpty) {
@@ -43,9 +46,18 @@ class Produto {
     _descricao = descricao;
   }
 
+  set vendidos(int quantidade) {
+    if (quantidade >= 0) {
+      _vendidos = quantidade;
+    } else {
+      print('Quantidade vendida não pode ser negativa');
+    }
+  }
+
   bool vender(int quantidade) {
     if (_quantidadeEmEstoque > 0) {
       _quantidadeEmEstoque -= quantidade;
+      _vendidos -= quantidade;
       return true;
     } else {
       return false;
@@ -61,6 +73,7 @@ class Produto {
 
 class Carrinho {
   List<Produto> carrinho = [];
+
   void adicionarProdutoCarrinho(Produto produto) {
     carrinho.add(produto);
   }
@@ -80,6 +93,18 @@ class Carrinho {
     }
     print("*****");
     print("Preço total: $precototal");
+  }
+
+  void comprarCarrinho() {
+    for (var Produto in carrinho) {
+      if (Produto.vender(1)) {
+        print("Compra realizada");
+      } else {
+        print("Estoque indisponivel para o produto $Produto!");
+      }
+
+      carrinho.removeWhere((Produto) => Produto == Produto);
+    }
   }
 }
 
@@ -127,6 +152,7 @@ void loopCarrinho() {
     print("X - Sair do carrinho");
     print("a - Adicionar produto ao carrinho");
     print("L - Listar Produtos do carrinho");
+    print("c - Comprar carrinho");
     entrada = entradaString();
     switch (entrada) {
       case "X" || "x":
@@ -146,6 +172,9 @@ void loopCarrinho() {
         break;
       case "L" || "l":
         carrinho.mostrarCarrinho();
+        break;
+      case "C" || "c":
+        carrinho.comprarCarrinho();
         break;
     }
   }
