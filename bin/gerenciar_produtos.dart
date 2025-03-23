@@ -58,10 +58,11 @@ class Produto {
   }
 
   bool vender(int quantidade) {
-    if (_quantidadeEmEstoque > 0) {
+    if (_quantidadeEmEstoque >= quantidade) {
       _vendidos += quantidade;
       return true;
     } else {
+      print("Estoque insuficiente para o produto ${_nome}.");
       return false;
     }
   }
@@ -92,12 +93,8 @@ class Carrinho {
       return;
     }
 
-    // Se o produto já estiver no carrinho, apenas incrementa a quantidade
-    if (carrinho.containsKey(produto)) {
-      carrinho[produto] = carrinho[produto]! + quantidade;
-    } else {
-      carrinho[produto] = quantidade;
-    }
+    // Usa o operador ?? para somar a quantidade, se já existir, ou definir 0 caso contrário
+    carrinho[produto] = (carrinho[produto] ?? 0) + quantidade;
 
     produto.reduzirEstoque(quantidade);
     print("Produto ${produto.nome} adicionado ao carrinho!");
@@ -132,7 +129,6 @@ class Carrinho {
 
     carrinho.forEach((produto, quantidade) {
       if (!produto.vender(quantidade)) {
-        print("Estoque indisponível para o produto ${produto.nome}!");
         return;
       }
       itensParaRemover.add(produto);
