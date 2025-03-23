@@ -82,54 +82,68 @@ class Produto {
 }
 
 class Carrinho {
-  List<Produto> carrinho = [];
+  // Utiliza um Map para associar cada produto à quantidade no carrinho.
+  Map<Produto, int> carrinho = {};
 
-  void adicionarProdutoCarrinho(Produto produto, int quantidade) {
+  // Adiciona o produto no carrinho e controla a quantidade
+  void adicionarProdutoNoCarrinho(Produto produto, int quantidade) {
     if (produto.quantidadeEmEstoque < quantidade) {
       print("Estoque indisponível para o produto ${produto.nome}!");
       return;
     }
-    print("Produto ${produto.nome} adicionado!");
-    produto.reduzirEstoque(quantidade);
-    for (var i = 0; i < quantidade; i++) {
-      carrinho.add(produto);
+
+    // Se o produto já estiver no carrinho, apenas incrementa a quantidade
+    if (carrinho.containsKey(produto)) {
+      carrinho[produto] = carrinho[produto]! + quantidade;
+    } else {
+      carrinho[produto] = quantidade;
     }
+
+    produto.reduzirEstoque(quantidade);
+    print("Produto ${produto.nome} adicionado ao carrinho!");
   }
 
+  // Exibe os produtos no carrinho
   void mostrarCarrinho() {
     if (carrinho.isEmpty) {
-      print("carrinho vazio!");
+      print("Carrinho vazio!");
       return;
     }
-    double precototal = 0;
-    for (var produto in carrinho) {
-      String nome = produto.nome;
-      double preco = produto.preco;
-      precototal += preco;
+
+    double precoTotal = 0;
+    carrinho.forEach((produto, quantidade) {
+      precoTotal += produto.preco * quantidade;
       print("------");
-      print("$nome - R\$ $preco");
-    }
+      print("${produto.nome} - R\$ ${produto.preco} x $quantidade");
+    });
+
     print("*****");
-    print("Preço total: $precototal");
+    print("Preço total: R\$ $precoTotal");
   }
 
+  // Realiza a compra dos itens do carrinho
   void comprarCarrinho() {
     if (carrinho.isEmpty) {
-      print("Adicione algum produto para comprar!");
+      print("Adicione algum produto ao carrinho para comprar!");
       return;
     }
+
     List<Produto> itensParaRemover = [];
 
-    for (var produto in carrinho) {
-      if (!produto.vender(1)) {
+    carrinho.forEach((produto, quantidade) {
+      if (!produto.vender(quantidade)) {
         print("Estoque indisponível para o produto ${produto.nome}!");
         return;
       }
       itensParaRemover.add(produto);
+    });
+
+    // Após a compra, remove os produtos vendidos do carrinho
+    for (var produto in itensParaRemover) {
+      carrinho.remove(produto);
     }
 
-    print("Compra realizada!");
-    carrinho.removeWhere((produto) => itensParaRemover.contains(produto));
+    print("Compra realizada com sucesso!");
   }
 }
 
@@ -163,30 +177,36 @@ void listarProdutos() {
     String nomeProduto = element.nome;
     double precoProduto = element.preco;
     int quantProduto = element.quantidadeEmEstoque;
-    int Vendidos = element.vendidos;
+    int vendidos = element.vendidos;
     print(
-      " - $nomeProduto, R\$ $precoProduto, Quantidade: $quantProduto, Vendidos: $Vendidos",
+      " - $nomeProduto, R\$ $precoProduto, Quantidade: $quantProduto, Vendidos: $vendidos",
     );
   }
 }
 
-void adicionarAoCarrinho() {
+void selecionarProdutoParaCarrinho() {
   if (produtos.isEmpty) {
     print("Não existe nenhum produto cadastrado!");
     return;
   }
   print("---------");
   listarProdutos();
+
   print("Digite o nome do produto que quer adicionar ao carrinho:");
   String nomeProduto = entradaString();
-  print("Digite a quantidade desejada:");
-  int quantidadeProduto = int.parse(entradaString());
+
+  bool produtoEncontrado = false;
   for (var element in produtos) {
-    if (element.nome != nomeProduto) {
-      print("Produto nao encontrado!");
-    } else {
-      carrinho.adicionarProdutoCarrinho(element, quantidadeProduto);
+    if (element.nome == nomeProduto) {
+      produtoEncontrado = true;
+      print("Digite a quantidade desejada:");
+      int quantidadeProduto = int.parse(entradaString());
+      carrinho.adicionarProdutoNoCarrinho(element, quantidadeProduto);
+      break;
     }
+  }
+  if (!produtoEncontrado) {
+    print("Produto não encontrado!");
   }
 }
 
@@ -200,15 +220,19 @@ void loopCarrinho() {
     print("c - Comprar carrinho");
     entrada = entradaString();
     switch (entrada) {
-      case "X" || "x":
+      case "X":
+      case "x":
         break;
-      case "A" || "a":
-        adicionarAoCarrinho();
+      case "A":
+      case "a":
+        selecionarProdutoParaCarrinho();
         break;
-      case "L" || "l":
+      case "L":
+      case "l":
         carrinho.mostrarCarrinho();
         break;
-      case "C" || "c":
+      case "C":
+      case "c":
         carrinho.comprarCarrinho();
         break;
     }
@@ -225,15 +249,19 @@ void loopMain() {
     print("M - Carrinho");
     entrada = entradaString();
     switch (entrada) {
-      case "X" || "x":
+      case "X":
+      case "x":
         break;
-      case "C" || "c":
+      case "C":
+      case "c":
         produtos.add(cadastrarProdutos());
         break;
-      case "L" || "l":
+      case "L":
+      case "l":
         listarProdutos();
         break;
-      case "M" || "m":
+      case "M":
+      case "m":
         loopCarrinho();
         break;
     }
