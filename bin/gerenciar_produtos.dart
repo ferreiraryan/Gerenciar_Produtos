@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 List<Produto> produtos = [];
@@ -85,9 +84,16 @@ class Produto {
 class Carrinho {
   List<Produto> carrinho = [];
 
-  void adicionarProdutoCarrinho(Produto produto) {
-    carrinho.add(produto);
-    produto.reduzirEstoque(1);
+  void adicionarProdutoCarrinho(Produto produto, int quantidade) {
+    if (produto.quantidadeEmEstoque < quantidade) {
+      print("Estoque indisponível para o produto ${produto.nome}!");
+      return;
+    }
+    print("Produto ${produto.nome} adicionado!");
+    produto.reduzirEstoque(quantidade);
+    for (var i = 0; i < quantidade; i++) {
+      carrinho.add(produto);
+    }
   }
 
   void mostrarCarrinho() {
@@ -108,17 +114,21 @@ class Carrinho {
   }
 
   void comprarCarrinho() {
+    if (carrinho.isEmpty) {
+      print("Adicione algum produto para comprar!");
+      return;
+    }
     List<Produto> itensParaRemover = [];
 
     for (var produto in carrinho) {
-      if (produto.vender(1)) {
-        print("Compra realizada do produto ${produto.nome}");
-        itensParaRemover.add(produto);
-      } else {
+      if (!produto.vender(1)) {
         print("Estoque indisponível para o produto ${produto.nome}!");
+        return;
       }
+      itensParaRemover.add(produto);
     }
 
+    print("Compra realizada!");
     carrinho.removeWhere((produto) => itensParaRemover.contains(produto));
   }
 }
@@ -160,6 +170,26 @@ void listarProdutos() {
   }
 }
 
+void adicionarAoCarrinho() {
+  if (produtos.isEmpty) {
+    print("Não existe nenhum produto cadastrado!");
+    return;
+  }
+  print("---------");
+  listarProdutos();
+  print("Digite o nome do produto que quer adicionar ao carrinho:");
+  String nomeProduto = entradaString();
+  print("Digite a quantidade desejada:");
+  int quantidadeProduto = int.parse(entradaString());
+  for (var element in produtos) {
+    if (element.nome != nomeProduto) {
+      print("Produto nao encontrado!");
+    } else {
+      carrinho.adicionarProdutoCarrinho(element, quantidadeProduto);
+    }
+  }
+}
+
 void loopCarrinho() {
   String? entrada = "";
   while (entrada != "x" && entrada != "X") {
@@ -173,18 +203,7 @@ void loopCarrinho() {
       case "X" || "x":
         break;
       case "A" || "a":
-        print("---------");
-        listarProdutos();
-        print("Digite o nome do produto que quer adicionar ao carrinho:");
-        String nomeProduto = entradaString();
-        print("Digite a quantidade desejada:");
-        for (var element in produtos) {
-          if (element.nome != nomeProduto) {
-            print("Produto nao encontrado!");
-          } else {
-            carrinho.adicionarProdutoCarrinho(element);
-          }
-        }
+        adicionarAoCarrinho();
         break;
       case "L" || "l":
         carrinho.mostrarCarrinho();
