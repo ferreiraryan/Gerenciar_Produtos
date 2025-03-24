@@ -3,13 +3,16 @@ import 'dart:io';
 List<Produto> produtos = [];
 Carrinho carrinho = Carrinho();
 
+//Classe dos Produtos
 class Produto {
+  //Atributos do produto
   String _nome;
   double _preco;
   int _quantidadeEmEstoque;
   String? _descricao;
   int _vendidos = 0;
 
+  //Construtor
   Produto(
     this._nome,
     this._preco,
@@ -21,6 +24,7 @@ class Produto {
   int get quantidadeEmEstoque => _quantidadeEmEstoque;
   int get vendidos => _vendidos;
 
+  //Getters e setters
   set nome(String nome) {
     if (nome.isNotEmpty) {
       _nome = nome;
@@ -56,6 +60,8 @@ class Produto {
       print('Quantidade vendida não pode ser negativa');
     }
   }
+
+  //Funções de venda
 
   bool vender(int quantidade) {
     if (_quantidadeEmEstoque >= quantidade) {
@@ -143,6 +149,7 @@ class Carrinho {
   }
 }
 
+// Recebe uma entrada e garante que o retorno será uma String
 String entradaString() {
   String? entrada;
   do {
@@ -152,6 +159,7 @@ String entradaString() {
   return entrada;
 }
 
+// Recebe as informações e cadastra o produto informado
 Produto cadastrarProdutos() {
   print("Digite o nome:");
   String nome = entradaString();
@@ -167,6 +175,7 @@ Produto cadastrarProdutos() {
   return Produto(nome, preco, quantEstoque);
 }
 
+// Lista os produtos no terminal
 void listarProdutos() {
   print("-----------");
   for (var element in produtos) {
@@ -180,6 +189,7 @@ void listarProdutos() {
   }
 }
 
+// Verifica se o produto existe, se sim adiciona envia para a verificação do carrinho
 void selecionarProdutoParaCarrinho() {
   if (produtos.isEmpty) {
     print("Não existe nenhum produto cadastrado!");
