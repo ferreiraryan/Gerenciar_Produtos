@@ -1,33 +1,37 @@
-# 📌 Gerenciar Produtos
+# 📌 Calculadora Idade Canina
 
-activity to train classes in dart.
+IOS Class SwiftUI Activity
 
 ## 🚀 Technologies
 
 This project was developed using the following technologies:
 
-- [Dart](https://dart.dev/)
+- [SwiftUI](https://developer.apple.com/xcode/swiftui/)
+- [Xcode](https://developer.apple.com/xcode/)
 
 ## 📂 Project Structure
 
 ```
 /project-root
-│── 📁 bin            # You will only use it!
-|── ── gerenciar_produtos.dart # the activity.
+│── 📁 tercafeiraaula1.xcodeproj      # The activity
+│── 📁 tercafeiraaula1                # Main source code files
+│── 📁 tercafeiraaula1Tests           # Unit tests
+│── 📁 tercafeiraaula1UITests         # UI tests
+│── 📄 README.md                      # This 
+
 ```
 
 ## 📥 Installation
 
 ```sh
 # Clone this repository
-$ git clone https://github.com/ferreiraryan/atvClasses-Dart
+$ git clone https://github.com/ferreiraryan/Calculadora-Idade-Canina
 
-# Install dart extension in vscode
+# Install Xcode
 
-# open directory in vscode
+# open directory in Xcode
 
 # Run the project
-$ dart run
 ```
 
 ## 📬 Contact
